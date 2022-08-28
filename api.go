@@ -18,8 +18,8 @@ func (hm *hashMgr) Add(keys ...string) {
 			hm.hashMap[hashVal] = key
 			hm.keys = append(hm.keys, hashVal)
 		}
-		hm.sorted = false
 	}
+	hm.sorted = false
 	hm.mutex.Unlock()
 }
 
@@ -34,8 +34,8 @@ func (hm *hashMgr) Get(key string) string {
 	sliceLen := len(hm.keys)
 	idx := sort.Search(sliceLen, func(i int) bool {
 		return hm.keys[i] >= hashVal
-	})
-	return hm.hashMap[hm.keys[idx%sliceLen]]
+	}) % sliceLen
+	return hm.hashMap[hm.keys[idx]]
 }
 
 func (hm *hashMgr) Remove(keys ...string) {
@@ -49,10 +49,11 @@ func (hm *hashMgr) Remove(keys ...string) {
 		for j := 0; j < hm.replicasNum; j++ {
 			tempVal := hm.calc([]byte(key + strconv.Itoa(j)))
 			hashVal := hm.calc([]byte(fmt.Sprintf("%d", tempVal)))
-			idx := sort.Search(len(hm.keys), func(i int) bool {
+			sliceLen := len(hm.keys)
+			idx := sort.Search(sliceLen, func(i int) bool {
 				return hm.keys[i] >= hashVal
-			})
-			if idx >= len(hm.keys) { // 不合法
+			}) % sliceLen
+			if hm.keys[idx] != hashVal { // 不合法
 				return
 			}
 			hm.keys = append(hm.keys[0:idx], hm.keys[idx+1:len(hm.keys)]...)
