@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func (hm *hashMgr) Add(keys ...string) {
+func (hm *HashMgr) Add(keys ...string) {
 	hm.mutex.Lock()
 	for _, key := range keys {
 		for j := 0; j < hm.replicasNum; j++ {
@@ -23,7 +23,7 @@ func (hm *hashMgr) Add(keys ...string) {
 	hm.mutex.Unlock()
 }
 
-func (hm *hashMgr) Get(key string) string {
+func (hm *HashMgr) Get(key string) string {
 	hashVal := hm.calc([]byte(key))
 	hm.mutex.Lock()
 	defer hm.mutex.Unlock()
@@ -38,7 +38,7 @@ func (hm *hashMgr) Get(key string) string {
 	return hm.hashMap[hm.keys[idx]]
 }
 
-func (hm *hashMgr) Remove(keys ...string) {
+func (hm *HashMgr) Remove(keys ...string) {
 	hm.mutex.Lock()
 	defer hm.mutex.Unlock()
 	if !hm.sorted {
