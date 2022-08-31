@@ -8,9 +8,9 @@ import (
 // hashing function
 type HashFunc func(key []byte) uint32
 
-type option func(*hashMgr)
+type option func(*HashMgr)
 
-type hashMgr struct {
+type HashMgr struct {
 	hashMap     map[uint32]string // hashVal -> keys
 	keys        uints             // hashval slice
 	calc        HashFunc
@@ -20,8 +20,8 @@ type hashMgr struct {
 }
 
 // create a consistent hashing instance
-func NewMgr(opt ...option) *hashMgr {
-	defaultHash := &hashMgr{
+func NewMgr(opt ...option) *HashMgr {
+	defaultHash := &HashMgr{
 		hashMap:     make(map[uint32]string),
 		keys:        make([]uint32, 0),
 		calc:        crc32.ChecksumIEEE,

@@ -17,7 +17,7 @@ func main() {
 	for k, v := range mp {
 		fmt.Println(k, v)
 	}
-	fmt.Println("over")
+	fmt.Println("over 1")
 	hashMgr.Remove("4")
 	for k := range mp {
 		delete(mp, k)
@@ -29,4 +29,8 @@ func main() {
 	for k, v := range mp {
 		fmt.Println(k, v)
 	}
+	fmt.Println("over 2")
+	fmt.Println(hashMgr.Get("100"))
+	fmt.Println(hashMgr.Get("100"))
+	fmt.Println(hashMgr.Get("100"))
 }
