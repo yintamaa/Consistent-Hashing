@@ -23,7 +23,7 @@ func (hm *HashMgr) Add(keys ...string) {
 	hm.mutex.Unlock()
 }
 
-func (hm *HashMgr) Get(key string) string {
+func (hm *HashMgr) Get(key string) (string, bool) {
 	hashVal := hm.calc([]byte(key))
 	hm.mutex.Lock()
 	defer hm.mutex.Unlock()
@@ -32,13 +32,16 @@ func (hm *HashMgr) Get(key string) string {
 		hm.sorted = true
 	}
 	sliceLen := len(hm.keys)
+	if sliceLen == 0 {
+		return "", false
+	}
 	idx := sort.Search(sliceLen, func(i int) bool {
 		return hm.keys[i] >= hashVal
 	}) % sliceLen
-	return hm.hashMap[hm.keys[idx]]
+	return hm.hashMap[hm.keys[idx]], true
 }
 
-func (hm *HashMgr) Remove(keys ...string) {
+func (hm *HashMgr) Remove(keys ...string) bool {
 	hm.mutex.Lock()
 	defer hm.mutex.Unlock()
 	if !hm.sorted {
@@ -50,15 +53,19 @@ func (hm *HashMgr) Remove(keys ...string) {
 			tempVal := hm.calc([]byte(key + strconv.Itoa(j)))
 			hashVal := hm.calc([]byte(fmt.Sprintf("%d", tempVal)))
 			sliceLen := len(hm.keys)
+			if sliceLen == 0 {
+				return false
+			}
 			idx := sort.Search(sliceLen, func(i int) bool {
 				return hm.keys[i] >= hashVal
 			}) % sliceLen
 			if hm.keys[idx] != hashVal { // 不合法
-				return
+				return false
 			}
 			hm.keys = append(hm.keys[0:idx], hm.keys[idx+1:len(hm.keys)]...)
 			delete(hm.hashMap, hashVal)
 		}
 		hm.sorted = false
 	}
+	return true
 }
