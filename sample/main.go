@@ -11,7 +11,7 @@ func main() {
 	hashMgr := consistentHashing.NewMgr(consistentHashing.WithReplicaNum(1000))
 	hashMgr.Add("1", "2", "3", "4")
 	for i := 0; i < 100; i++ {
-		id := hashMgr.Get(fmt.Sprintf("%d", i))
+		id, _ := hashMgr.Get(fmt.Sprintf("%d", i))
 		mp[id]++
 	}
 	for k, v := range mp {
@@ -23,7 +23,7 @@ func main() {
 		delete(mp, k)
 	}
 	for i := 0; i < 100; i++ {
-		id := hashMgr.Get(fmt.Sprintf("%d", i))
+		id, _ := hashMgr.Get(fmt.Sprintf("%d", i))
 		mp[id]++
 	}
 	for k, v := range mp {
